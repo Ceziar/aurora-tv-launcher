@@ -17,14 +17,16 @@
   To undo it all, run the three commands in README-restore.txt (or: pm enable the stock launcher).
 
 .EXAMPLE
-  powershell -ExecutionPolicy Bypass -File tools\restore-tv-config.ps1
   powershell -ExecutionPolicy Bypass -File tools\restore-tv-config.ps1 -TvAddress 192.168.1.50:5555
 #>
 param(
     [Parameter(Mandatory = $true)][string]$TvAddress,
     [string]$Adb = 'adb',
-    [string]$Apk = (Join-Path $PSScriptRoot '..\app\build\outputs\apk\debug\app-debug.apk')
+    [string]$Apk = ''
 )
+
+# The default is worked out here, not in the param block: $PSScriptRoot is empty there when a parameter is mandatory.
+if (-not $Apk) { $Apk = Join-Path $PSScriptRoot '..\app\build\outputs\apk\debug\app-debug.apk' }
 
 $Package = 'io.github.ceziar.aurora'
 $StockLauncher = 'com.google.android.apps.tv.launcherx'
