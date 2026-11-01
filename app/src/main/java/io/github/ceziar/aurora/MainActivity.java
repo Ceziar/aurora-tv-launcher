@@ -1024,10 +1024,8 @@ public class MainActivity extends Activity {
             canvas.scale(s, s);
             canvas.drawCircle(0, 0, 6, glowPaint);
             canvas.drawCircle(0, 0, 1.3f, corePaint);
-            // The sled and what it tows: a few black dots trailing behind the headlight.
-            for (int k = 1; k <= 4; k++) {
-                canvas.drawCircle(-sledDir * (3.5f + k * 4f), 0.5f, 1.5f - 0.15f * k, trailPaint);
-            }
+            // The sled itself: one black blob trailing behind the headlight.
+            canvas.drawCircle(-sledDir * 6.5f, 0.5f, 1.6f, trailPaint);
             canvas.restore();
         }
 
