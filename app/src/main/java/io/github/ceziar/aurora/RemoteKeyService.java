@@ -28,6 +28,27 @@ import java.util.List;
 public class RemoteKeyService extends AccessibilityService {
     private static final String TAG = "RemoteKeys";
 
+    /** True while the system has this service bound; ServiceGuard reads it. */
+    static volatile boolean running;
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        running = true;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        running = false;
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        running = false;
+        super.onDestroy();
+    }
+
     private static final String TV_APP = "com.tcl.tv";
 
     // Linux scan codes reported by this remote, and the package each one opens.

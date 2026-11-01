@@ -231,6 +231,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         rebuildRibbonIfChanged(false);
+        ServiceGuard.start(this);
     }
 
     @Override
@@ -696,6 +697,8 @@ public class MainActivity extends Activity {
         private final char[] frameSide = new char[MAX_FRAMES];
         private Bitmap moonBmp;
         private int[] moonPixels;
+        private Bitmap moonTintBmp;    // the moon as tinted by the aurora in front of it, rebuilt every frame
+        private int[] moonTintPixels;
         private final Rect moonDst = new Rect();
         private long moonStamp = -1; // minute of the last moon update
         private float moonLight;     // 0 = new moon .. 1 = full moon
@@ -780,6 +783,8 @@ public class MainActivity extends Activity {
                 atlas = BitmapFactory.decodeStream(img);
                 moonBmp = Bitmap.createBitmap(frameSize, frameSize, Bitmap.Config.ARGB_8888);
                 moonPixels = new int[frameSize * frameSize];
+                moonTintBmp = Bitmap.createBitmap(frameSize, frameSize, Bitmap.Config.ARGB_8888);
+                moonTintPixels = new int[frameSize * frameSize];
             } catch (Exception e) {
                 atlas = null; // no moon; the rest of the scene still works
             }
@@ -851,7 +856,42 @@ public class MainActivity extends Activity {
             float cy = MOON_Y * h;
             float half = MOON_R * h * (frameSize / 2f) / discR;
             moonDst.set((int) (cx - half), (int) (cy - half), (int) (cx + half), (int) (cy + half));
-            canvas.drawBitmap(moonBmp, null, moonDst, screenPaint);
+            tintMoon(cx - half, cy - half, 2 * half, h);
+            canvas.drawBitmap(moonTintBmp, null, moonDst, screenPaint);
+        }
+
+        /**
+         * Where aurora light lies over the moon, the moon's own light takes the aurora's colour: each moon pixel
+         * is multiplied by the hue of the aurora at the same spot, in proportion to how bright the aurora is
+         * there. The dark side stays dark and the disc keeps its craters; the aurora is then screened over it.
+         */
+        private void tintMoon(float left, float top, float size, float h) {
+            float skyBottom = skyRows * h / H;
+            for (int fy = 0; fy < frameSize; fy++) {
+                int sy = (int) ((top + (fy + 0.5f) / frameSize * size) / skyBottom * skyRows);
+                sy = sy < 0 ? 0 : sy >= skyRows ? skyRows - 1 : sy;
+                for (int fx = 0; fx < frameSize; fx++) {
+                    int i = fy * frameSize + fx;
+                    int p = moonPixels[i];
+                    if ((p & 0xFFFFFF) == 0) { moonTintPixels[i] = p; continue; }
+                    int sx = (int) ((left + (fx + 0.5f) / frameSize * size) / (getWidth() / (float) W));
+                    sx = sx < 0 ? 0 : sx >= W ? W - 1 : sx;
+                    int a = pixelsSky[sy * W + sx];
+                    float ar = (a >> 16) & 255, ag = (a >> 8) & 255, ab = a & 255;
+                    float top3 = Math.max(ar, Math.max(ag, ab));
+                    float s = clamp(top3 / 255f * 2.4f, 0f, 0.8f);
+                    if (s < 0.01f) { moonTintPixels[i] = p; continue; }
+                    float inv = 1f / top3;
+                    float mr = (1 - s) + s * ar * inv;
+                    float mg = (1 - s) + s * ag * inv;
+                    float mb = (1 - s) + s * ab * inv;
+                    moonTintPixels[i] = 0xFF000000
+                            | (to255(((p >> 16) & 255) * mr) << 16)
+                            | (to255(((p >> 8) & 255) * mg) << 8)
+                            | to255((p & 255) * mb);
+                }
+            }
+            moonTintBmp.setPixels(moonTintPixels, 0, frameSize, 0, 0, frameSize, frameSize);
         }
         // ---- ridge
 

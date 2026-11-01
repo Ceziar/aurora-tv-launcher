@@ -160,6 +160,15 @@ Gate 'the Aurora service is ticked' {
 & (Join-Path $Here 'restore-tv-config.ps1') -TvAddress $TvAddress -Adb $Adb -Apk $Apk | Out-Null
 Ok 'service checked and restarted if needed'
 
+Write-Host '   This TV resets the accessibility master switch now and then, which silently stops the remote buttons.'
+Write-Host '   Aurora can turn it back on by itself (it only does so if you ticked the service) once you grant it'
+Write-Host '   the WRITE_SECURE_SETTINGS permission. The grant is a single adb command and is removed by uninstalling.'
+if (Ask 'Grant WRITE_SECURE_SETTINGS so Aurora keeps its remote buttons running?' $true) {
+    Tv pm grant $Package android.permission.WRITE_SECURE_SETTINGS | Out-Host
+    Tv dumpsys deviceidle whitelist "+$Package" | Out-Host
+    Ok 'granted; Aurora re-enables the accessibility switch within a minute if the TV turns it off'
+}
+
 # ---------------------------------------------------------------- Optional tweaks
 Head 'Optional tweaks (all off by default, all reversible with -Undo)'
 if (Ask 'Turn off the TV menu animations (window, transition, animator = 0)? Makes menus snappier.') {

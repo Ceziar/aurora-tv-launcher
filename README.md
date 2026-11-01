@@ -124,10 +124,22 @@ None of these are needed for Aurora; the wizard offers them and can undo them.
 
 ## After a cold reboot
 
-The settings stored on the TV survive, but this firmware resets Android's accessibility master switch at boot, so the
-service is ticked yet not running (Home still works, because Aurora is the only home screen left). Switch Network
-debugging back on, run `check-tv-config.ps1`, and if it reports anything run `restore-tv-config.ps1`, which restarts the
-service. After installing a new build, run the restore script once too.
+The settings stored on the TV survive, but this firmware resets Android's accessibility master switch at boot (and
+occasionally without a reboot), so the service is ticked yet not running; Home still works, because Aurora is the only
+home screen left, but the remapped buttons do not. Switch Network debugging back on, run `check-tv-config.ps1`, and if
+it reports anything run `restore-tv-config.ps1`, which restarts the service. After installing a new build, run the
+restore script once too.
+
+**Optional self-repair (`ServiceGuard`).** Grant Aurora one extra permission once and it fixes this itself:
+
+```
+adb -s <ip>:5555 shell pm grant io.github.ceziar.aurora android.permission.WRITE_SECURE_SETTINGS
+```
+
+Then, at boot, on every Home press and once a minute while it runs, Aurora turns the accessibility master switch back
+on, and restarts the service if it is ticked but not running (at most every five minutes). It never ticks the service
+for you, and does nothing unless you ticked it. Tested on the G10: with the switch forced off it was back on within
+a minute. The wizard offers the grant.
 
 ## Optional: stop TCL's OS updates
 
