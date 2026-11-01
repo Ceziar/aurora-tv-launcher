@@ -136,6 +136,10 @@ restore script once too.
 adb -s <ip>:5555 shell pm grant io.github.ceziar.aurora android.permission.WRITE_SECURE_SETTINGS
 ```
 
+(The restore script also sets the `APP_AUTO_START` app-op to `allow`. This TV's own `TclAppBoot` otherwise refuses to
+let the system start the service whenever Aurora's process is not running, which is the usual reason the remote
+buttons stop working after a reinstall or a memory kill; the log line is `callee_doesn't_have_OP_AUTO_START_permission`.)
+
 Then, at boot, on every Home press and once a minute while it runs, Aurora turns the accessibility master switch back
 on, and restarts the service if it is ticked but not running (at most every five minutes). It never ticks the service
 for you, and does nothing unless you ticked it. Tested on the G10 (author's own build, same code): with the switch forced off it was back on within

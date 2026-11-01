@@ -78,6 +78,12 @@ Start-Sleep -Seconds 2
 Step 'Disable the setup-recovery screen (it kept winning as the Home target)'
 Tv pm disable-user --user 0 $SetupRecovery | Out-Host
 
+Step 'Allow Aurora to start in the background'
+# TCL's TclAppBoot refuses to let the system start an app's service when the app lacks the APP_AUTO_START app-op;
+# for the remote-button service that means it never starts after the process has been killed or after a reinstall.
+Tv cmd appops set $Package APP_AUTO_START allow
+Ok ((Tv cmd appops get $Package) -join ' ' -replace '.*(APP_AUTO_START: [a-z]+).*','$1')
+
 Step 'Screensaver off'
 Tv settings put secure screensaver_enabled 0
 Tv settings put secure screensaver_activate_on_sleep 0

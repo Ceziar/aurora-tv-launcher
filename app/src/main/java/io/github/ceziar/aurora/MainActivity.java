@@ -753,10 +753,11 @@ public class MainActivity extends Activity {
             float lakeTop = skyRows * h / (float) H;
             shorePaint.setShader(new LinearGradient(0, lakeTop - 2, 0, lakeTop + 0.035f * h,
                     0xCC03080C, 0x0003080C, Shader.TileMode.CLAMP));
-            // Hazy hilltops: the ridge is see-through at its highest points and solid lower down.
+            // The ridge body is opaque so the aurora stays behind the hills; only the very top of the highest peaks
+            // is a little see-through, and the edge is softened by feather strokes in drawRidge.
             float shoreY = horizon * h / (float) H;
             ridgePaint.setShader(new LinearGradient(0, shoreY - 0.085f * h, 0, shoreY + 3,
-                    new int[]{0x5503080C, 0xB303080C, 0xFF03080C}, new float[]{0f, 0.45f, 1f},
+                    new int[]{0xB003080C, 0xF203080C, 0xFF03080C}, new float[]{0f, 0.35f, 1f},
                     Shader.TileMode.CLAMP));
         }
 
