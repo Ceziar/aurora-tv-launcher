@@ -1,0 +1,4 @@
+<resources>
+    <string name="remote_key_service_name">Aurora remote keys</string>
+    <string name="remote_key_service_description">Sends the remote\'s Home button to Aurora and lets the YouTube, gear and TV buttons open YouTube, Settings and TV when the stock launcher is disabled. It reacts to those keys only and ignores all other keys.</string>
+</resources>
