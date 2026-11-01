@@ -138,7 +138,7 @@ adb -s <ip>:5555 shell pm grant io.github.ceziar.aurora android.permission.WRITE
 
 Then, at boot, on every Home press and once a minute while it runs, Aurora turns the accessibility master switch back
 on, and restarts the service if it is ticked but not running (at most every five minutes). It never ticks the service
-for you, and does nothing unless you ticked it. Tested on the G10: with the switch forced off it was back on within
+for you, and does nothing unless you ticked it. Tested on the G10 (author's own build, same code): with the switch forced off it was back on within
 a minute. The wizard offers the grant.
 
 ## Optional: stop TCL's OS updates
