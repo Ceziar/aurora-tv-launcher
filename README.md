@@ -49,6 +49,19 @@ The app asks for two permissions: *Internet* (only for the weather) and *query a
 
 ## Install
 
+### Guided (recommended)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\install-wizard.ps1
+```
+
+The wizard walks through five steps and **stops at each manual one until it has checked that you did it**: Network
+debugging on, the "Allow debugging" prompt accepted, the APK present, Aurora made the home app, and the accessibility
+service ticked. It saves a snapshot of the settings it may change, then offers a few optional tweaks (all off by
+default). `install-wizard.ps1 -Undo` puts everything back. The manual commands below do the same thing.
+
+### Manual
+
 ```powershell
 .\gradlew.bat assembleDebug          # ./gradlew assembleDebug on macOS/Linux; skip this line if you downloaded the APK
 adb connect 192.168.1.50:5555         # your TV's address
@@ -93,6 +106,21 @@ The coloured app buttons (Netflix 242 Bluetooth + 566 IR, Prime 752, film-strip 
 working natively. If you want them to open something else, uncomment their lines in `RemoteKeyService.java`.
 **To find the codes on your own remote:** `adb shell getevent -lt`, press a button, and read the `KEY_...` line; or press
 it and read `adb logcat -d -s RemoteKeys`, which prints every unmapped media key it sees.
+
+> **Removing an app breaks its button.** If you uninstall or disable an app that has a button on the remote (Netflix,
+> Prime Video, Disney+, YouTube), pressing that button opens the app's Play Store page instead. Keep those apps, or
+> point the button at something else in `RemoteKeyService.java` (the optional lines above).
+
+## Optional tweaks
+
+None of these are needed for Aurora; the wizard offers them and can undo them.
+
+* **Animations off:** `adb shell settings put global window_animation_scale 0` (and `transition_animation_scale`,
+  `animator_duration_scale`). Same as Developer options > "Window/Transition/Animator animation scale: off".
+  Menus feel much snappier on this slow TV.
+* **TCL helper apps** (sticker, phone-connect, home helper, shop mode, Alexa helper, content feed): the wizard can
+  disable them one at a time with `pm disable-user --user 0 <package>` and re-enable them with `pm enable <package>`.
+  Not all TV functions are documented, so it asks per app. Do not disable `com.tcl.ttvs` (keyboard, casting, menus).
 
 ## After a cold reboot
 
@@ -139,6 +167,7 @@ and switch the accessibility service off.
 app/src/main/java/io/github/ceziar/aurora/MainActivity.java      launcher, scene, ribbon, manage dialog
 app/src/main/java/io/github/ceziar/aurora/RemoteKeyService.java  Home / YouTube / gear / TV keys
 app/src/main/assets/moon_phases.{png,txt}                       moon frame atlas (see NOTICE.md)
+tools/install-wizard.ps1                                         guided installer with checks and -Undo
 tools/restore-tv-config.ps1, check-tv-config.ps1                 TV setup, repair, read-only check
 ```
 
