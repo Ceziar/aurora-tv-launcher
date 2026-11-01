@@ -30,6 +30,14 @@ below show how to find yours.
 > reversible (see [Undo](#undo)) and the scripts re-enable the stock launcher if anything goes wrong, but it was
 > only ever tried on one TV. You do this at your own risk.
 
+## Download
+
+A pre-built APK is on the [Releases page](https://github.com/Ceziar/aurora-tv-launcher/releases) (about 0.5 MB, signed
+with the standard Android *debug* key, so it is for sideloading with `adb`, not for an app store). Its SHA-256 is in the
+release notes; check it with `Get-FileHash aurora-1.0-debug.apk` (PowerShell) or `sha256sum aurora-1.0-debug.apk`.
+If you would rather not run someone else's binary, build it yourself: it is two plain Java files and takes a minute.
+The app asks for two permissions: *Internet* (only for the weather) and *query all packages* (to list your apps).
+
 ## What you need
 
 * ADB over the network: on the TV, Settings > Device Preferences > About, tap *Build* seven times; then Developer
@@ -42,9 +50,9 @@ below show how to find yours.
 ## Install
 
 ```powershell
-.\gradlew.bat assembleDebug          # ./gradlew assembleDebug on macOS/Linux
+.\gradlew.bat assembleDebug          # ./gradlew assembleDebug on macOS/Linux; skip this line if you downloaded the APK
 adb connect 192.168.1.50:5555         # your TV's address
-adb -s 192.168.1.50:5555 install -r app/build/outputs/apk/debug/app-debug.apk
+adb -s 192.168.1.50:5555 install -r app/build/outputs/apk/debug/app-debug.apk   # or the path of the APK you downloaded
 .\tools\restore-tv-config.ps1 -TvAddress 192.168.1.50:5555
 ```
 
@@ -136,6 +144,18 @@ tools/restore-tv-config.ps1, check-tv-config.ps1                 TV setup, repai
 
 `moon_phases.txt`: first line `frameSize columns frameCount discRadius`, then one `illumination side` line per frame
 (`R` lit on the right = waxing, `L` waning, `B` new or full). Swap in your own atlas with the same layout.
+
+## Feedback and issues
+
+Found a bug, or got Aurora working (or not) on another TCL model? Please
+[open an issue](https://github.com/Ceziar/aurora-tv-launcher/issues). It helps a lot if you include:
+
+* the TV model and build: `adb shell getprop ro.product.model` and `adb shell getprop ro.build.fingerprint`;
+* what you did and what happened, and for a remote button that misbehaves, the output of `adb logcat -d -s RemoteKeys`;
+* the output of `tools\check-tv-config.ps1` (it changes nothing).
+
+Please remove personal details (Wi-Fi name, IP and MAC addresses, your town) from anything you paste. Aurora is a
+hobby project made for one TV, so replies may be slow, and pull requests are welcome.
 
 ## Licence
 
