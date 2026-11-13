@@ -906,7 +906,8 @@ public class MainActivity extends Activity {
             float shoreY = horizon * h / H;
             ridgePath.reset();
             ridgeTop.reset();
-            ridgePath.moveTo(0, shoreY + 3);
+            float baseY = skyRows * h / H + 2; // the sky layer ends here; end the ridge below it so no aurora leaks under the hills
+            ridgePath.moveTo(0, baseY);
             for (float x = 0; x <= w + 6; x += 6f) {
                 float xb = x / w * W;
                 float n = 0.5f * sin(xb * 0.035 + 0.6) + 0.3f * sin(xb * 0.09 + 2.0) + 0.2f * sin(xb * 0.21 + 4.0);
@@ -914,7 +915,7 @@ public class MainActivity extends Activity {
                 ridgePath.lineTo(x, y);
                 if (x == 0) ridgeTop.moveTo(x, y); else ridgeTop.lineTo(x, y);
             }
-            ridgePath.lineTo(w + 6, shoreY + 3);
+            ridgePath.lineTo(w + 6, baseY);
             ridgePath.close();
             canvas.drawPath(ridgePath, ridgePaint);
             // Feather the top edge into the sky with a few wide, faint strokes of the ridge colour.
