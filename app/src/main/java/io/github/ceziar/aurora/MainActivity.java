@@ -236,46 +236,49 @@ public class MainActivity extends Activity {
 
     /** A small round focusable button with a line icon; its name shows next to the row while it has focus. */
     private View topButton(final int icon, final String label, View.OnClickListener click) {
-        final int size = dp(40);
+        final int size = dp(26);
+        final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
         final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeCap(Paint.Cap.ROUND);
-        p.setStrokeWidth(dp(2));
+        p.setStrokeWidth(density * 1.4f);
+        p.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR)); // the icon is cut out of the solid circle
         View b = new View(this) {
             @Override protected void onDraw(Canvas c) {
-                float cx = getWidth() / 2f, cy = getHeight() / 2f, r = getWidth() * 0.24f;
-                p.setColor(isFocused() ? Color.WHITE : 0xDDFFFFFF);
-                if (icon == ICON_GEAR) {
-                    c.drawCircle(cx, cy, r * 0.55f, p);
-                    for (int k = 0; k < 8; k++) {
-                        double a = k * Math.PI / 4;
-                        c.drawLine(cx + (float) Math.cos(a) * r * 0.85f, cy + (float) Math.sin(a) * r * 0.85f,
-                                cx + (float) Math.cos(a) * r * 1.3f, cy + (float) Math.sin(a) * r * 1.3f, p);
+                float w = getWidth(), cx = w / 2f, cy = getHeight() / 2f, f = isFocused() ? 1.2f : 1f, r = density * 4.2f * f;
+                int layer = c.saveLayer(0, 0, w, getHeight(), null);
+                fill.setColor(isFocused() ? 0xB3FFFFFF : 0x7DFFFFFF);
+                c.drawCircle(cx, cy, density * 10.5f * f, fill);
+                if (icon == ICON_GEAR) { // a ring with six teeth
+                    c.drawCircle(cx, cy, r, p);
+                    for (int k = 0; k < 6; k++) {
+                        double a = k * Math.PI / 3;
+                        c.drawLine(cx + (float) Math.cos(a) * r * 1.2f, cy + (float) Math.sin(a) * r * 1.2f,
+                                cx + (float) Math.cos(a) * r * 1.65f, cy + (float) Math.sin(a) * r * 1.65f, p);
                     }
-                    c.drawCircle(cx, cy, r * 0.95f, p);
-                } else { // up and down arrows
-                    c.drawLine(cx - r * 0.6f, cy - r * 1.2f, cx - r * 0.6f, cy + r * 1.2f, p);
-                    c.drawLine(cx - r * 1.1f, cy - r * 0.7f, cx - r * 0.6f, cy - r * 1.2f, p);
-                    c.drawLine(cx - r * 0.1f, cy - r * 0.7f, cx - r * 0.6f, cy - r * 1.2f, p);
-                    c.drawLine(cx + r * 0.6f, cy - r * 1.2f, cx + r * 0.6f, cy + r * 1.2f, p);
-                    c.drawLine(cx + r * 0.1f, cy + r * 0.7f, cx + r * 0.6f, cy + r * 1.2f, p);
-                    c.drawLine(cx + r * 1.1f, cy + r * 0.7f, cx + r * 0.6f, cy + r * 1.2f, p);
+                } else if (icon == ICON_ARRANGE) { // one arrow, up and down
+                    c.drawLine(cx, cy - r * 1.4f, cx, cy + r * 1.4f, p);
+                    c.drawLine(cx - r * 0.7f, cy - r * 0.7f, cx, cy - r * 1.4f, p);
+                    c.drawLine(cx + r * 0.7f, cy - r * 0.7f, cx, cy - r * 1.4f, p);
+                    c.drawLine(cx - r * 0.7f, cy + r * 0.7f, cx, cy + r * 1.4f, p);
+                    c.drawLine(cx + r * 0.7f, cy + r * 0.7f, cx, cy + r * 1.4f, p);
+                } else { // an X
+                    c.drawLine(cx - r * 0.9f, cy - r * 0.9f, cx + r * 0.9f, cy + r * 0.9f, p);
+                    c.drawLine(cx - r * 0.9f, cy + r * 0.9f, cx + r * 0.9f, cy - r * 0.9f, p);
                 }
+                c.restoreToCount(layer);
             }
         };
         b.setFocusable(true);
         b.setClickable(true);
         b.setContentDescription(label);
-        b.setBackground(cardBackground(false));
         b.setOnFocusChangeListener((v, has) -> {
-            v.setBackground(cardBackground(has));
-            v.animate().scaleX(has ? 1.15f : 1f).scaleY(has ? 1.15f : 1f).setDuration(120).start();
             v.invalidate();
             topLabel.setText(has ? label : "");
         });
         b.setOnClickListener(click);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
-        lp.rightMargin = dp(10);
+        lp.rightMargin = dp(2);
         b.setLayoutParams(lp);
         return b;
     }
