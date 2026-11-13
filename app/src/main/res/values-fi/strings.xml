@@ -10,6 +10,7 @@
     <string name="wx_snow_showers">Lumikuuroja</string>
     <string name="wx_thunder">Ukkosta</string>
 
+    <string name="top_settings">Asetukset</string>
     <string name="manage_caption">Näytä / piilota sovelluksia</string>
     <string name="manage_title">Näytä, piilota ja järjestä sovelluksia</string>
     <string name="manage_idle_hint">OK: näytä/piilota.  Pitkä OK: siirrä sovellusta ylös/alas.</string>

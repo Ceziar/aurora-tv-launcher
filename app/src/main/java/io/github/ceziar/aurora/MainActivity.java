@@ -183,6 +183,24 @@ public class MainActivity extends Activity {
         ip.rightMargin = dp(56);
         root.addView(info, ip);
 
+        // Small button row, top left: settings and arrange apps. Reached with D-pad up from the ribbon.
+        topLabel = new TextView(this);
+        topLabel.setTextSize(13);
+        topLabel.setTextColor(0xFFEEEEEE);
+        topLabel.setShadowLayer(6, 0, 2, 0xAA000000);
+        topLabel.setPadding(dp(8), 0, 0, 0);
+        LinearLayout topRow = new LinearLayout(this);
+        topRow.setOrientation(LinearLayout.HORIZONTAL);
+        topRow.setGravity(Gravity.CENTER_VERTICAL);
+        topRow.setClipChildren(false);
+        topRow.addView(topButton(ICON_GEAR, getString(R.string.top_settings), v -> openSettings()));
+        topRow.addView(topButton(ICON_ARRANGE, getString(R.string.manage_title), v -> showManageDialog()));
+        topRow.addView(topLabel);
+        FrameLayout.LayoutParams tp = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.START);
+        tp.topMargin = dp(28);
+        tp.leftMargin = dp(56);
+        root.addView(topRow, tp);
+
         // App ribbon, bottom.
         ribbon = new LinearLayout(this);
         ribbon.setOrientation(LinearLayout.HORIZONTAL);
@@ -211,6 +229,63 @@ public class MainActivity extends Activity {
         root.addView(bottom, rp);
 
         setContentView(root);
+    }
+
+    private static final int ICON_GEAR = 0, ICON_ARRANGE = 1;
+    private TextView topLabel;
+
+    /** A small round focusable button with a line icon; its name shows next to the row while it has focus. */
+    private View topButton(final int icon, final String label, View.OnClickListener click) {
+        final int size = dp(40);
+        final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setStyle(Paint.Style.STROKE);
+        p.setStrokeCap(Paint.Cap.ROUND);
+        p.setStrokeWidth(dp(2));
+        View b = new View(this) {
+            @Override protected void onDraw(Canvas c) {
+                float cx = getWidth() / 2f, cy = getHeight() / 2f, r = getWidth() * 0.24f;
+                p.setColor(isFocused() ? Color.WHITE : 0xDDFFFFFF);
+                if (icon == ICON_GEAR) {
+                    c.drawCircle(cx, cy, r * 0.55f, p);
+                    for (int k = 0; k < 8; k++) {
+                        double a = k * Math.PI / 4;
+                        c.drawLine(cx + (float) Math.cos(a) * r * 0.85f, cy + (float) Math.sin(a) * r * 0.85f,
+                                cx + (float) Math.cos(a) * r * 1.3f, cy + (float) Math.sin(a) * r * 1.3f, p);
+                    }
+                    c.drawCircle(cx, cy, r * 0.95f, p);
+                } else { // up and down arrows
+                    c.drawLine(cx - r * 0.6f, cy - r * 1.2f, cx - r * 0.6f, cy + r * 1.2f, p);
+                    c.drawLine(cx - r * 1.1f, cy - r * 0.7f, cx - r * 0.6f, cy - r * 1.2f, p);
+                    c.drawLine(cx - r * 0.1f, cy - r * 0.7f, cx - r * 0.6f, cy - r * 1.2f, p);
+                    c.drawLine(cx + r * 0.6f, cy - r * 1.2f, cx + r * 0.6f, cy + r * 1.2f, p);
+                    c.drawLine(cx + r * 0.1f, cy + r * 0.7f, cx + r * 0.6f, cy + r * 1.2f, p);
+                    c.drawLine(cx + r * 1.1f, cy + r * 0.7f, cx + r * 0.6f, cy + r * 1.2f, p);
+                }
+            }
+        };
+        b.setFocusable(true);
+        b.setClickable(true);
+        b.setContentDescription(label);
+        b.setBackground(cardBackground(false));
+        b.setOnFocusChangeListener((v, has) -> {
+            v.setBackground(cardBackground(has));
+            v.animate().scaleX(has ? 1.15f : 1f).scaleY(has ? 1.15f : 1f).setDuration(120).start();
+            v.invalidate();
+            topLabel.setText(has ? label : "");
+        });
+        b.setOnClickListener(click);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+        lp.rightMargin = dp(10);
+        b.setLayoutParams(lp);
+        return b;
+    }
+
+    private void openSettings() {
+        try {
+            startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (Exception ignored) {
+            // A TV without a settings screen: nothing to open.
+        }
     }
 
     private View scrim(GradientDrawable.Orientation o, int from, int to) {
@@ -300,7 +375,8 @@ public class MainActivity extends Activity {
         Set<String> hidden = prefs.getStringSet("hidden", new HashSet<String>());
         List<AppItem> items = new ArrayList<>();
         for (ResolveInfo ri : pm.queryIntentActivities(i, 0)) {
-            if (ri.activityInfo.packageName.equals(getPackageName())) continue;
+            String pkg = ri.activityInfo.packageName;
+            if (pkg.equals(getPackageName()) || pkg.equals("com.android.tv.settings") || pkg.equals("com.android.settings")) continue; // settings has its own top button
             boolean isHidden = hidden.contains(ri.activityInfo.packageName);
             if (isHidden != includeHidden) continue;
             AppItem it = new AppItem();
@@ -354,7 +430,7 @@ public class MainActivity extends Activity {
         if (focused != null) focusIndex = ribbon.indexOfChild(focused);
 
         // Every app always fits on screen: cards shrink as the list grows (capped at full size).
-        int count = apps.size() + 1; // + the "hidden apps" card
+        int count = Math.max(1, apps.size());
         int sidePad = dp(56);
         int avail = getResources().getDisplayMetrics().widthPixels - 2 * sidePad;
         int fullGap = dp(18);
@@ -370,10 +446,11 @@ public class MainActivity extends Activity {
 
         ribbon.removeAllViews();
         for (AppItem it : apps) ribbon.addView(makeCard(it, apps, cardW, gap));
-        ribbon.addView(makeMoreCard(cardW, gap));
 
-        int target = Math.max(0, Math.min(focusIndex, ribbon.getChildCount() - 1));
-        ribbon.getChildAt(target).requestFocus();
+        if (ribbon.getChildCount() > 0) {
+            int target = Math.max(0, Math.min(focusIndex, ribbon.getChildCount() - 1));
+            ribbon.getChildAt(target).requestFocus();
+        }
     }
 
     private View makeCard(final AppItem app, final List<AppItem> all, final int cardW, int gap) {

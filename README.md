@@ -10,8 +10,10 @@ and one row of your apps.
   Nothing changes faster than about once every two seconds and nothing flashes.
 * A moon drawn from a set of real-looking phase pictures, picked by the **actual lunar phase** from the date.
 * Clock, date and weather (Open-Meteo, no API key) top right.
-* One ribbon of apps along the bottom; the cards shrink so every app always fits. Hide, show and re-order apps from
-  the "..." tile (or the remote's **Menu** key); long-press OK on an app to pick it up, up/down to move it.
+* One ribbon of apps along the bottom; the cards shrink so every app always fits. Hide, show and re-order apps with
+  the arrows button in the small button row at the top left (or the remote's **Menu** key); long-press OK on an app to
+  pick it up, up/down to move it. The gear button next to it opens the TV's settings (the Settings app itself is not
+  in the ribbon, because not every TV has one). D-pad up from the ribbon reaches the row.
 * Small and light: plain Java, no libraries, about 0.5 MB, drawn at ~25 fps on a 32-bit ARM TV.
 
 ## Tested hardware (only this one)
