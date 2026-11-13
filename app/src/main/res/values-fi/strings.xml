@@ -1,0 +1,22 @@
+<resources>
+    <string name="wx_clear">Selkeää</string>
+    <string name="wx_partly_cloudy">Puolipilvistä</string>
+    <string name="wx_cloudy">Pilvistä</string>
+    <string name="wx_fog">Sumua</string>
+    <string name="wx_drizzle">Tihkusadetta</string>
+    <string name="wx_rain">Sadetta</string>
+    <string name="wx_snow">Lumisadetta</string>
+    <string name="wx_showers">Sadekuuroja</string>
+    <string name="wx_snow_showers">Lumikuuroja</string>
+    <string name="wx_thunder">Ukkosta</string>
+
+    <string name="manage_caption">Näytä / piilota sovelluksia</string>
+    <string name="manage_title">Näytä, piilota ja järjestä sovelluksia</string>
+    <string name="manage_idle_hint">OK: näytä/piilota.  Pitkä OK: siirrä sovellusta ylös/alas.</string>
+    <string name="manage_moving_hint">Siirretään: %1$s  (ylös/alas, OK = valmis)</string>
+    <string name="move_left">Siirrä vasemmalle</string>
+    <string name="move_right">Siirrä oikealle</string>
+    <string name="hide_from_list">Piilota listalta</string>
+    <string name="save">Tallenna</string>
+    <string name="cancel">Peruuta</string>
+</resources>

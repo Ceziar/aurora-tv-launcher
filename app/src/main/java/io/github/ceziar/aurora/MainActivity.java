@@ -279,17 +279,17 @@ public class MainActivity extends Activity {
         }).start();
     }
 
-    private static String describe(int code) {
-        if (code == 0) return "Selkeää";
-        if (code <= 2) return "Puolipilvistä";
-        if (code == 3) return "Pilvistä";
-        if (code == 45 || code == 48) return "Sumua";
-        if (code >= 51 && code <= 57) return "Tihkusadetta";
-        if (code >= 61 && code <= 67) return "Sadetta";
-        if (code >= 71 && code <= 77) return "Lumisadetta";
-        if (code >= 80 && code <= 82) return "Sadekuuroja";
-        if (code == 85 || code == 86) return "Lumikuuroja";
-        if (code >= 95) return "Ukkosta";
+    private String describe(int code) {
+        if (code == 0) return getString(R.string.wx_clear);
+        if (code <= 2) return getString(R.string.wx_partly_cloudy);
+        if (code == 3) return getString(R.string.wx_cloudy);
+        if (code == 45 || code == 48) return getString(R.string.wx_fog);
+        if (code >= 51 && code <= 57) return getString(R.string.wx_drizzle);
+        if (code >= 61 && code <= 67) return getString(R.string.wx_rain);
+        if (code >= 71 && code <= 77) return getString(R.string.wx_snow);
+        if (code >= 80 && code <= 82) return getString(R.string.wx_showers);
+        if (code == 85 || code == 86) return getString(R.string.wx_snow_showers);
+        if (code >= 95) return getString(R.string.wx_thunder);
         return "";
     }
 
@@ -437,7 +437,7 @@ public class MainActivity extends Activity {
             plus.setBackground(cardBackground(has));
             v.setTranslationZ(has ? dp(8) : 0);
             v.animate().scaleX(has ? focusScale : 1f).scaleY(has ? focusScale : 1f).setDuration(120).start();
-            if (has) caption.setText("Näytä / piilota sovelluksia");
+            if (has) caption.setText(R.string.manage_caption);
         });
         item.setOnClickListener(v -> showManageDialog());
         return item;
@@ -472,7 +472,7 @@ public class MainActivity extends Activity {
     // ---------------------------------------------------------------- editing
 
     private void showEditDialog(final AppItem app, final List<AppItem> all) {
-        String[] options = {"Siirrä vasemmalle", "Siirrä oikealle", "Piilota listalta"};
+        String[] options = {getString(R.string.move_left), getString(R.string.move_right), getString(R.string.hide_from_list)};
         new AlertDialog.Builder(this)
                 .setTitle(app.label)
                 .setItems(options, (d, which) -> {
@@ -527,7 +527,7 @@ public class MainActivity extends Activity {
         list.setAdapter(adapter);
         for (int i = 0; i < on.size(); i++) list.setItemChecked(i, on.get(i));
 
-        final String idleHint = "OK: näytä/piilota.  Pitkä OK: siirrä sovellusta ylös/alas.";
+        final String idleHint = getString(R.string.manage_idle_hint);
         final TextView hint = new TextView(this);
         hint.setText(idleHint);
         hint.setTextSize(14);
@@ -543,14 +543,14 @@ public class MainActivity extends Activity {
             list.setSelector(new ColorDrawable(Color.TRANSPARENT)); // the highlight follows the app instead
             adapter.notifyDataSetChanged();
             justGrabbed[0] = true; // the key-up that ends this long press must not drop the app
-            hint.setText("Siirretään: " + labels.get(pos) + "  (ylös/alas, OK = valmis)");
+            hint.setText(getString(R.string.manage_moving_hint, labels.get(pos)));
             return true;
         });
 
         AlertDialog d = new AlertDialog.Builder(this)
-                .setTitle("Näytä, piilota ja järjestä sovelluksia")
+                .setTitle(R.string.manage_title)
                 .setView(box)
-                .setPositiveButton("Tallenna", (dd, w) -> {
+                .setPositiveButton(R.string.save, (dd, w) -> {
                     Set<String> hidden = new HashSet<>(prefs.getStringSet("hidden", new HashSet<String>()));
                     for (int i = 0; i < all.size(); i++) {
                         String pkg = all.get(i).component.getPackageName();
@@ -560,7 +560,7 @@ public class MainActivity extends Activity {
                     saveOrder(all);
                     rebuildRibbonIfChanged(true);
                 })
-                .setNegativeButton("Peruuta", null)
+                .setNegativeButton(R.string.cancel, null)
                 .create();
         d.setOnKeyListener((dd, keyCode, ev) -> {
             if (grabbed[0] < 0) return false;

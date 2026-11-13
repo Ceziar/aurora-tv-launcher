@@ -1,4 +1,25 @@
 <resources>
     <string name="remote_key_service_name">Aurora remote keys</string>
     <string name="remote_key_service_description">Sends the remote\'s Home button to Aurora and lets the YouTube, gear and TV buttons open YouTube, Settings and TV when the stock launcher is disabled. It reacts to those keys only and ignores all other keys.</string>
+
+    <string name="wx_clear">Clear</string>
+    <string name="wx_partly_cloudy">Partly cloudy</string>
+    <string name="wx_cloudy">Cloudy</string>
+    <string name="wx_fog">Fog</string>
+    <string name="wx_drizzle">Drizzle</string>
+    <string name="wx_rain">Rain</string>
+    <string name="wx_snow">Snow</string>
+    <string name="wx_showers">Rain showers</string>
+    <string name="wx_snow_showers">Snow showers</string>
+    <string name="wx_thunder">Thunderstorms</string>
+
+    <string name="manage_caption">Show / hide apps</string>
+    <string name="manage_title">Show, hide and arrange apps</string>
+    <string name="manage_idle_hint">OK: show/hide.  Long press OK: move the app up/down.</string>
+    <string name="manage_moving_hint">Moving: %1$s  (up/down, OK = done)</string>
+    <string name="move_left">Move left</string>
+    <string name="move_right">Move right</string>
+    <string name="hide_from_list">Hide from list</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>

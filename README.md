@@ -87,8 +87,10 @@ Home would not land on Aurora:
 ### Make it yours
 
 In `MainActivity.java`: `LOCATION_NAME`, `LAT`, `LON` (weather); `DEFAULT_ORDER` and `DEFAULT_HIDDEN` (first-run app
-order and the TCL helper apps that start hidden). Two things to know: the dialog text and the weather words are in
-**Finnish**, written inline in that file, and the moon is drawn for the northern hemisphere (waxing = lit on the right).
+order and the TCL helper apps that start hidden). Two things to know: all text (dialog, weather words) is in
+`res/values/strings.xml` in **English**, with a **Finnish** translation in `res/values-fi/`, and the TV's system
+language picks between them (to add a language, add a `res/values-xx/strings.xml`); and the moon is drawn for the
+northern hemisphere (waxing = lit on the right).
 
 ## The remote keys
 
